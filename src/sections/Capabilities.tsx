@@ -82,7 +82,6 @@ function TechOrbitStage() {
     let Ry = Math.min(H * 0.42, 320);
     let Rx = Math.min(Ry * 0.44, W * 0.32);
     let angle = 0;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     function resize() {
       if (!stage) return;

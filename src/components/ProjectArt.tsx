@@ -1,11 +1,6 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import type { Project } from "@/lib/data";
-
-const BG = "#131412";
-const IVORY = "#f2f0e9";
-const LIME = "#a6e84a";
-const CONCRETE = "#777777";
 
 /* ------------------------------------------------------------------ */
 /*  GHARBAL — Realistic database stack fed by data sources             */
@@ -440,7 +435,7 @@ function CircuitArt() {
     });
 
     // Packet spheres (clean white/lime dots, no blurry halo)
-    const pktGroups = packets.map((pk) => {
+    const pktGroups = packets.map(() => {
       const g = new THREE.Group();
       g.add(
         new THREE.Mesh(
@@ -829,7 +824,7 @@ function GamingArt() {
   );
 }
 
-const ARTS: Record<Project["art"], JSX.Element> = {
+const ARTS: Record<Project["art"], React.ReactNode> = {
   gharbal: <GharbalArt />,
   circuit: <CircuitArt />,
   gaming: <GamingArt />,

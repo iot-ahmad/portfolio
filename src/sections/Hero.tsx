@@ -10,7 +10,7 @@ export default function Hero({ start }: { start: boolean }) {
     if (!root.current) return;
 
     let ctx: gsap.Context | null = null;
-    let timer: NodeJS.Timeout | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
 
     const execute = () => {
       if (!root.current) return;
