@@ -350,11 +350,11 @@ function CircuitArt() {
       rings.push(r);
     }
 
-    // Cloud
+    // Cloud — crisp luminous ivory matching visual identity
     const cloud = new THREE.Group();
     cloud.position.set(0, 6.8, 0);
     G.add(cloud);
-    const cm = M(0xe8f5e0, 0.45, 0, 0x4a8040, 0.3);
+    const cm = M(0xf0f4ec, 0.25, 0.1, 0x243812, 0.2);
     [
       [0, 0, 0, 1.25],
       [1.2, -0.2, 0.1, 0.9],
@@ -367,18 +367,18 @@ function CircuitArt() {
       m.scale.y = 0.88;
     });
 
-    // Sensor nodes
+    // Sensor nodes — styled to match the brand identity (Acid Lime, Ivory, Stealth Obsidian)
     const sensorDefs = [
-      { p: [-7.5, 0, -4.5], c: 0xff8a3d, t: "box" },
-      { p: [7.5, 0, -4.5], c: 0xa8f05a, t: "dome" },
-      { p: [-7.5, 0, 5], c: 0xffd23d, t: "cyl" },
-      { p: [7.5, 0, 5], c: 0xff5b6b, t: "box" },
+      { p: [-7.5, 0, -4.5], c: 0x1a2216, em: 0xa8f05a, emI: 0.5, t: "box" },
+      { p: [7.5, 0, -4.5], c: 0xa8f05a, em: 0xa8f05a, emI: 0.85, t: "dome" },
+      { p: [-7.5, 0, 5], c: 0xf2f0e9, em: 0xa8f05a, emI: 0.25, t: "cyl" },
+      { p: [7.5, 0, 5], c: 0x98ea4a, em: 0xa8f05a, emI: 0.6, t: "box" },
     ];
     const packets: Array<{ c: THREE.QuadraticBezierCurve3; t: number; s: number; r: boolean }> = [];
     const nodeGroups: THREE.Group[] = [];
     const nodeRings: THREE.Mesh[] = [];
 
-    function tube(curve: THREE.QuadraticBezierCurve3, col: number, op = 0.45) {
+    function tube(curve: THREE.QuadraticBezierCurve3, col: number, op = 0.5) {
       G.add(
         new THREE.Mesh(
           new THREE.TubeGeometry(curve, 64, 0.035, 6, false),
@@ -399,10 +399,10 @@ function CircuitArt() {
       g.position.set(nd.p[0], 0, nd.p[2]);
       G.add(g);
       nodeGroups.push(g);
-      add(new THREE.CylinderGeometry(1.15, 1.3, 0.25, 48), M(0x151b0d, 0.35, 0.3), 0, -1.2, 0, g);
+      add(new THREE.CylinderGeometry(1.15, 1.3, 0.25, 48), M(0x10140c, 0.35, 0.3), 0, -1.2, 0, g);
       const rng = add(
         new THREE.TorusGeometry(1.2, 0.04, 10, 64),
-        new THREE.MeshBasicMaterial({ color: nd.c, transparent: true, opacity: 0.9 }),
+        new THREE.MeshBasicMaterial({ color: 0xa8f05a, transparent: true, opacity: 0.95 }),
         0,
         -1.05,
         0,
@@ -416,31 +416,31 @@ function CircuitArt() {
           : nd.t === "dome"
           ? new THREE.SphereGeometry(0.7, 36, 22, 0, Math.PI * 2, 0, Math.PI / 2)
           : new THREE.CylinderGeometry(0.5, 0.5, 0.95, 32);
-      add(geo, M(nd.c, 0.3, 0.1, nd.c, 0.25), 0, nd.t === "dome" ? -0.85 : -0.5, 0, g);
+      add(geo, M(nd.c, 0.25, 0.15, nd.em, nd.emI), 0, nd.t === "dome" ? -0.85 : -0.5, 0, g);
       const a = new THREE.Vector3(nd.p[0], -0.3, nd.p[2]);
       const mid = new THREE.Vector3(nd.p[0] * 0.5, 2.2, nd.p[2] * 0.5);
       const cv2 = new THREE.QuadraticBezierCurve3(a, mid, hub);
-      tube(cv2, nd.c);
+      tube(cv2, 0xa8f05a, 0.55);
       const out = i === 3;
       packets.push({ c: cv2, t: i * 0.2, s: 0.3, r: out });
       packets.push({ c: cv2, t: i * 0.2 + 0.5, s: 0.3, r: out });
     });
 
-    // Board ↔ Cloud lines
+    // Board ↔ Cloud lines — Acid Lime brand colors
     const cp = new THREE.Vector3(0, 5.3, 0);
     [-0.5, 0.5].forEach((dx, idx) => {
       const cv3 = new THREE.QuadraticBezierCurve3(hub, new THREE.Vector3(dx * 3, 2.8, 0), cp);
-      tube(cv3, idx ? 0xff6b4a : 0xa8f05a, 0.45);
+      tube(cv3, idx ? 0xd4ff88 : 0xa8f05a, 0.5);
       for (let q = 0; q < 3; q++) packets.push({ c: cv3, t: q / 3 + idx * 0.15, s: 0.28, r: idx === 1 });
     });
 
-    // Packet spheres (clean white/lime dots, no blurry halo)
-    const pktGroups = packets.map(() => {
+    // Packet spheres (clean white and acid lime dots)
+    const pktGroups = packets.map((_, i) => {
       const g = new THREE.Group();
       g.add(
         new THREE.Mesh(
           new THREE.SphereGeometry(0.18, 16, 12),
-          new THREE.MeshBasicMaterial({ color: 0xffffff })
+          new THREE.MeshBasicMaterial({ color: i % 2 === 0 ? 0xffffff : 0xa8f05a })
         )
       );
       G.add(g);
