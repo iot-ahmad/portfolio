@@ -216,8 +216,8 @@ button {
 }
 
 .cursor-dot {
-  width: 8px;
-  height: 8px;
+  width: 14px;
+  height: 14px;
   background: var(--accent);
   transform: translate(-50%, -50%);
 }
