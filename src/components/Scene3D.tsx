@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Float, Lightformer } from "@react-three/drei";
 import * as THREE from "three";
-import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 const LIME = "#a8f05a";
 
@@ -14,10 +13,8 @@ export type ProgressRef = React.MutableRefObject<number>;
 
 function Sculpture({
   progress,
-  reduced,
 }: {
   progress: ProgressRef;
-  reduced: boolean;
 }) {
   const group = useRef<THREE.Group>(null);
   const knot = useRef<THREE.Mesh>(null);
@@ -67,33 +64,34 @@ function Sculpture({
     sat(s1.current, -2.5, 1.15, -0.6, 1.5);
     sat(s2.current, -1.7, -1.3, 0.4, 1.7);
 
-    if (!reduced) {
-      // mouse-responsive parallax
-      const { pointer } = state;
-      targetRot.current.y = pointer.x * 0.35;
-      targetRot.current.x = -pointer.y * 0.22;
-      group.current.rotation.y = THREE.MathUtils.damp(
-        group.current.rotation.y,
-        targetRot.current.y + p * 1.4,
-        2.2,
-        delta
-      );
-      group.current.rotation.x = THREE.MathUtils.damp(
-        group.current.rotation.x,
-        targetRot.current.x + p * 0.35,
-        2.2,
-        delta
-      );
-      // slow identity rotation on the knot itself
-      if (knot.current) {
-        knot.current.rotation.z += delta * 0.12;
-        knot.current.rotation.y += delta * 0.05;
-      }
-      // scroll-driven camera drift
-      state.camera.position.z = THREE.MathUtils.lerp(6.4, 4.9, p);
-      state.camera.position.y = THREE.MathUtils.lerp(0, 0.55, p);
-      state.camera.lookAt(0, 0, 0);
+    // mouse-responsive parallax
+    const { pointer } = state;
+    targetRot.current.y = pointer.x * 0.45;
+    targetRot.current.x = -pointer.y * 0.3;
+    group.current.rotation.y = THREE.MathUtils.damp(
+      group.current.rotation.y,
+      targetRot.current.y + p * 1.4,
+      2.5,
+      delta
+    );
+    group.current.rotation.x = THREE.MathUtils.damp(
+      group.current.rotation.x,
+      targetRot.current.x + p * 0.35,
+      2.5,
+      delta
+    );
+
+    // continuous smooth rotation on the knot itself
+    if (knot.current) {
+      knot.current.rotation.z += delta * 0.22;
+      knot.current.rotation.y += delta * 0.16;
+      knot.current.rotation.x += delta * 0.08;
     }
+
+    // scroll-driven camera drift
+    state.camera.position.z = THREE.MathUtils.lerp(6.4, 4.9, p);
+    state.camera.position.y = THREE.MathUtils.lerp(0, 0.55, p);
+    state.camera.lookAt(0, 0, 0);
   });
 
   return (
@@ -111,9 +109,9 @@ function Sculpture({
 
       {/* glass bubbles */}
       <Float
-        speed={reduced ? 0 : 1.4}
-        rotationIntensity={reduced ? 0 : 0.4}
-        floatIntensity={reduced ? 0 : 1.1}
+        speed={1.5}
+        rotationIntensity={0.4}
+        floatIntensity={1.1}
       >
         <mesh ref={s1} position={[-2.5, 1.15, -0.6]}>
           <sphereGeometry args={[0.5, 48, 48]} />
@@ -130,9 +128,9 @@ function Sculpture({
         </mesh>
       </Float>
       <Float
-        speed={reduced ? 0 : 1.1}
-        rotationIntensity={reduced ? 0 : 0.3}
-        floatIntensity={reduced ? 0 : 0.9}
+        speed={1.2}
+        rotationIntensity={0.3}
+        floatIntensity={0.9}
       >
         <mesh ref={s2} position={[-1.7, -1.3, 0.4]}>
           <sphereGeometry args={[0.3, 48, 48]} />
@@ -170,7 +168,6 @@ function Sculpture({
 }
 
 export default function Scene3D() {
-  const reduced = usePrefersReducedMotion();
   const wrapRef = useRef<HTMLDivElement>(null);
   const progress = useRef(0);
   const [active, setActive] = useState(true);
@@ -207,12 +204,12 @@ export default function Scene3D() {
     >
       <Canvas
         dpr={[1, 1.75]}
-        frameloop={active && !reduced ? "always" : "demand"}
+        frameloop={active ? "always" : "demand"}
         camera={{ position: [0, 0, 6.4], fov: 40 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         onCreated={() => setReady(true)}
       >
-        <Sculpture progress={progress} reduced={reduced} />
+        <Sculpture progress={progress} />
         {/* procedural studio environment — chrome needs something to reflect */}
         <Environment resolution={256}>
           <group>
